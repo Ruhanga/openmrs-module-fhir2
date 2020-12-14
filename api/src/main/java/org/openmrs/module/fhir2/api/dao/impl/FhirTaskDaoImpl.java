@@ -30,6 +30,7 @@ import org.openmrs.api.db.DAOException;
 import org.openmrs.module.fhir2.FhirConstants;
 import org.openmrs.module.fhir2.api.dao.FhirTaskDao;
 import org.openmrs.module.fhir2.api.search.param.SearchParameterMap;
+import org.openmrs.module.fhir2.model.FhirReference;
 import org.openmrs.module.fhir2.model.FhirTask;
 import org.springframework.stereotype.Component;
 
@@ -66,6 +67,12 @@ public class FhirTaskDaoImpl extends BaseFhirDao<FhirTask> implements FhirTaskDa
 		// TODO: Refactor - and figure out why CascadeType.ALL does not take care of this.
 		if (task.getOwnerReference() != null && task.getOwnerReference().getReference() != null) {
 			getSessionFactory().getCurrentSession().saveOrUpdate(task.getOwnerReference());
+		}
+		
+		if (task.getBasedOnReferences() != null) {
+			for (FhirReference reference : task.getBasedOnReferences()) {
+				getSessionFactory().getCurrentSession().saveOrUpdate(reference);
+			}
 		}
 		
 		getSessionFactory().getCurrentSession().saveOrUpdate(task);
